@@ -93,13 +93,31 @@ function createRequestOpts(plexContext, url) {
 function getAccessToken(plexContext, callback) {
     return request.get(createRequestOpts(plexContext, 'https://plex.tv/api/resources?includeHttps=1'))
         .then(parseString)
-        .then(extractAccessToken);
+        .then( result => extractAccessToken(result, plexContext) );
 }
 
-function extractAccessToken(result) {
+function extractAccessToken(result, {plexApi}) {
     let token = null;
-    let hasDevices = result.MediaContainer.Device && result.MediaContainer.Device.some(device => {
-        token = device.$.accessToken;
+    const checkServerName = !!plexApi.serverName;
+    let hasDevices = result.MediaContainer.Device && result.MediaContainer.Device.some(rawDevice => {
+        const {$: device} = rawDevice;
+        if (device.presence !== '1') {
+            return false;
+        }
+        const provides = device.provides.split(',');
+        if (!provides.includes('server')) {
+            return false;
+        }
+
+        if (checkServerName) {
+            if (plexApi.serverName === device.name) {
+                token = device.accessToken;
+                return true;
+            }
+            return false;
+        }
+
+        token = device.accessToken;
         return true;
     });
 
