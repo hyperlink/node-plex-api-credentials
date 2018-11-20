@@ -1,5 +1,5 @@
 {
-  "name": "plex-api-credentials",
+  "name": "@hyperlink/plex-api-credentials",
   "version": "2.0.0",
   "description": "Credentials authentication for plex-api",
   "main": "index.js",
@@ -32,7 +32,7 @@
     "xml2js": "^0.4.16"
   },
   "engines": {
-    "node": ">=4.4.3"
+    "node": ">=8.0.0"
   },
   "files": [
     "index.js",
